@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:AdventOfCode-2025}",
+            "name": "Debug AdventOfCode",
+            "target": "AdventOfCode",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug AdventOfCode"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:AdventOfCode-2025}",
+            "name": "Release AdventOfCode",
+            "target": "AdventOfCode",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release AdventOfCode"
+        }
+    ]
+}
