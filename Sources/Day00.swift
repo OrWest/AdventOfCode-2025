@@ -1,25 +1,88 @@
 import Algorithms
 
 struct Day00: AdventDay {
-  // Save your data in a corresponding text file in the `Data` directory.
-  var data: String
+  struct DialMovement {
+    enum Diraction: String {
+      case left
+      case right
 
-  // Splits input data into its component parts and convert from string.
-  var entities: [[Int]] {
-    data.split(separator: "\n\n").map {
-      $0.split(separator: "\n").compactMap { Int($0) }
+      init?(symbol: Substring) {
+        switch symbol {
+        case "L":
+          self = .left
+        case "R":
+          self = .right
+        default:
+          return nil
+        }
+      }
+    }
+
+    let diraction: Diraction
+    let distance: Int
+
+    /// Convert L10 into 10 to left
+    init?(value: Substring) {
+      guard value.count > 1 else { 
+        return nil 
+      }
+      let diractionValue = value.prefix(1)
+      let distanceValue = value.dropFirst(1)
+
+      guard let diraction = Diraction(symbol: diractionValue), let distance = Int(distanceValue) else {
+        return nil
+      }
+      self.diraction = diraction
+      self.distance = distance
     }
   }
 
-  // Replace this with your solution for the first part of the day's challenge.
-  func part1() -> Any {
-    // Calculate the sum of the first set of input data
-    entities.first?.reduce(0, +) ?? 0
+  // Input file content
+  var data: String
+
+  // Splits input data into its component parts and convert from string.
+  var dialMoves: [DialMovement] {
+    data.split(separator: "\n").compactMap { 
+      let value = DialMovement.init(value: $0)
+      if value == nil { print($0 + " value was not parsed")}
+      return value
+      } 
   }
 
-  // Replace this with your solution for the second part of the day's challenge.
-  func part2() -> Any {
-    // Sum the maximum entries in each set of data
-    entities.map { $0.max() ?? 0 }.reduce(0, +)
+  func part1() -> Int {
+    var zeroStopCount = 0
+    var dialValue = 50
+    for move in dialMoves {
+      let distance = move.distance
+      let diraction = move.diraction
+      // print("Move dial to \(diraction) to \(distance)")
+      // print("\(dialValue) \(diraction == .left ? "-" : "+") \(distance)", terminator: "")
+      switch diraction {
+        case .right:
+          dialValue += distance
+        case .left:
+          dialValue -= distance
+      }
+      // print(" = \(dialValue)", terminator: "")
+      if dialValue > 99 {
+        dialValue = dialValue % 100
+      } else if dialValue < -99 {
+        dialValue = dialValue % 100
+      }
+      if dialValue < 0 {
+        dialValue += 100
+      }
+      // print("(\(dialValue))")
+
+      if dialValue == 0 {
+        zeroStopCount += 1
+      }
+    }
+
+    return zeroStopCount
+  }
+
+  func part2() -> Int {
+    return -1
   }
 }
