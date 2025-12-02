@@ -21,7 +21,7 @@ struct Day00: AdventDay {
     let diraction: Diraction
     let distance: Int
 
-    /// Convert L10 into 10 to left
+    /// Convert L10 into "10 to left"
     init?(value: Substring) {
       guard value.count > 1 else { 
         return nil 
@@ -37,6 +37,12 @@ struct Day00: AdventDay {
     }
   }
 
+  struct MovementReport {
+    let previousValue: Int
+    let newValue: Int
+    let newValueRaw: Int
+  }
+
   // Input file content
   var data: String
 
@@ -49,30 +55,39 @@ struct Day00: AdventDay {
       } 
   }
 
+  private func move(_ movement: DialMovement, dialValue: Int) -> MovementReport {
+    let oldValue = dialValue
+    var rawValue = dialValue
+    switch movement.diraction {
+        case .right:
+          rawValue += movement.distance
+        case .left:
+          rawValue -= movement.distance
+      }
+
+
+    var newValue = rawValue
+    if newValue > 99 {
+      newValue = newValue % 100
+    } else if newValue < -99 {
+      newValue = newValue % 100
+    }
+    if newValue < 0 {
+      newValue += 100
+    }
+    // print("Move dial to \(movement.diraction) to \(movement.distance)")
+    // print("\(dialValue) \(movement.diraction == .left ? "-" : "+") \(movement.distance) = \(rawValue)(\(newValue))")
+
+    return .init(previousValue: oldValue, newValue: newValue, newValueRaw: rawValue)
+  }
+
   func part1() -> Int {
     var zeroStopCount = 0
     var dialValue = 50
-    for move in dialMoves {
-      let distance = move.distance
-      let diraction = move.diraction
-      // print("Move dial to \(diraction) to \(distance)")
-      // print("\(dialValue) \(diraction == .left ? "-" : "+") \(distance)", terminator: "")
-      switch diraction {
-        case .right:
-          dialValue += distance
-        case .left:
-          dialValue -= distance
-      }
-      // print(" = \(dialValue)", terminator: "")
-      if dialValue > 99 {
-        dialValue = dialValue % 100
-      } else if dialValue < -99 {
-        dialValue = dialValue % 100
-      }
-      if dialValue < 0 {
-        dialValue += 100
-      }
-      // print("(\(dialValue))")
+    for movement in dialMoves {
+      let report = move(movement, dialValue: dialValue)
+
+      dialValue = report.newValue
 
       if dialValue == 0 {
         zeroStopCount += 1
@@ -83,6 +98,17 @@ struct Day00: AdventDay {
   }
 
   func part2() -> Int {
-    return -1
+    var zeroStopCount = 0
+    var dialValue = 50
+    for movement in dialMoves {
+      let report = move(movement, dialValue: dialValue)
+
+      dialValue = report.newValue
+      zeroStopCount += abs(report.newValueRaw) / 100 // Crossed zero multiple times in one diraction
+      zeroStopCount += report.newValueRaw == 0 ? 1 : 0 // Stay on zero
+      zeroStopCount += report.newValueRaw * report.previousValue < 0 ? 1 : 0 // Crossed zero
+    }
+
+    return zeroStopCount
   }
 }

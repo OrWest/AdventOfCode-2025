@@ -14,10 +14,9 @@ struct Day00Tests {
     R60
     L55
     L1
-    L99
+    L499
     R14
     L82
-    R402
     L998
     """
 
@@ -27,7 +26,7 @@ struct Day00Tests {
   }
 
   @Test func testPart2() async throws {
-    // let challenge = Day00(data: testData)
-    // #expect(String(describing: challenge.part2()) == "32000")
+    let challenge = Day00(data: testData)
+    #expect(String(describing: challenge.part2()) == "20")
   }
 }
