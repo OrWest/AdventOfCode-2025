@@ -45,6 +45,34 @@ struct Day01: AdventDay {
   }
 
   func part2() -> UInt {
-    return 0
+    var invalidIds: [UInt] = []
+
+    for range in idRanges {
+      for id in range {
+        let idString = String(id)
+        let allDeviders = 2...max(idString.count, 2)
+        let possibleDeviders = allDeviders.filter { idString.count % $0 == 0 }
+
+        for devider in possibleDeviders {
+          let chunks = idString.evenlyChunked(in: devider)
+          guard chunks.count > 1, let first = chunks.first else { continue }
+
+          var allEqual = true
+          for chunk in chunks.dropFirst() {
+            if first != chunk {
+              allEqual = false
+              break
+            }
+          }
+
+          if allEqual {
+            // print("\(id) invalid. \(first) repeated")
+            invalidIds.append(id)
+            break
+          }
+        }
+      }
+    }
+    return invalidIds.reduce(0, { $0 + $1 })
   }
 }
