@@ -4,17 +4,29 @@ import Testing
 
 // Make a copy of this file for every day to ensure the provided smoke tests
 // pass.
-struct Day01Tests {
+struct Day10Tests {
   // Smoke test data provided in the challenge question
-  let testData = "11-22,95-115,998-1012,1188511880-1188511890,222220-222224,1698522-1698528,446443-446449,38593856-38593862,565653-565659,824824821-824824827,2121212118-2121212124"
+  let testData = """
+    L68
+    L30
+    R48
+    L5
+    R60
+    L55
+    L1
+    L499
+    R14
+    L82
+    L998
+    """
 
   @Test func testPart1() async throws {
     let challenge = Day01(data: testData)
-    #expect(String(describing: challenge.part1()) == "1227775554")
+    #expect(String(describing: challenge.part1()) == "3")
   }
 
   @Test func testPart2() async throws {
     let challenge = Day01(data: testData)
-    #expect(String(describing: challenge.part2()) == "4174379265")
+    #expect(String(describing: challenge.part2()) == "20")
   }
 }
