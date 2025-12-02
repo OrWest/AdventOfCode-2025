@@ -67,4 +67,4 @@ Dependencies/
 *.dSYM
 *.dSYM.zip
 
-Sources/Data/
+Sources/Data/*.txt
