@@ -45,7 +45,7 @@ struct Day03: AdventDay {
     var nextFirstIndex = 0
     for i in 0..<size {
       let range = nextFirstIndex...(numbers.count - size + i)
-      var maxValueIndex = findMaxIndex(numbers: numbers[range].enumerated()) + nextFirstIndex
+      let maxValueIndex = findMaxIndex(numbers: numbers[range].enumerated()) + nextFirstIndex
       let maxValue = numbers[maxValueIndex]
       guard maxValue > 0 else {
         print("\(numbers): Cannot find maxValue")
