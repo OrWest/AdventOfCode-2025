@@ -102,7 +102,7 @@ struct Day07: AdventDay {
       line += activeBeams[i] == nil ? "." : "|"
       }
     }
-    var sum = activeBeams.values.reduce(0, +)
+    let sum = activeBeams.values.reduce(0, +)
     let s = String(format: "%3d %@ %lu", arguments: [i, line, sum])
     print(s)
   }
