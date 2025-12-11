@@ -17,7 +17,7 @@ struct Graph {
             if let existingNode = nodes[id] {
                 node = existingNode
             } else {
-                node = .init(id: id, parent: nil)
+                node = .init(id: id)
                 nodes[id] = node
             }
             if id == inputId && input == nil {
@@ -32,9 +32,8 @@ struct Graph {
                 let childNode: GraphNode
                 if let existingNode = nodes[childId] {
                     childNode = existingNode
-                    existingNode.parents.insert(node)
                 } else {
-                    childNode = .init(id: childId, parent: node)
+                    childNode = .init(id: childId)
                     nodes[childId] = childNode
                 }
 
@@ -44,7 +43,7 @@ struct Graph {
                 if childId == inputId && input == nil {
                     input = childNode
                 }
-                node.children.insert(childNode)
+                node.children.append(childNode)
             }
         }
 

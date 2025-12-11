@@ -1,12 +1,11 @@
 class GraphNode: Hashable {
     let id: String
-    var children: Set<GraphNode>
-    var parents: Set<GraphNode>
+    var children: [GraphNode]
+    var pathToExitCount: Int?
 
-    init(id: String, parent: GraphNode?, childs: Set<GraphNode> = []) {
+    init(id: String, childs: [GraphNode] = []) {
         self.id = id
         self.children = childs
-        self.parents = parent.map { [$0] } ?? []
     }
 
     func hash(into hasher: inout Hasher) {

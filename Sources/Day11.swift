@@ -10,59 +10,39 @@ struct Day11: AdventDay {
   }
 
   func part2() -> Any {
-    // let graph = Graph(data: data, inputId: "svr")
+    let graph = Graph(data: data, inputId: "svr")
+    let svr_fftCount = discover(node: graph.input, outputId: "fft")
     let dacGraph = Graph(data: data, inputId: "dac")
-    let fft_svrGraph = Graph(data: data, inputId: "fft", outputId: "svr")
-    let svr_dacGraph = Graph(data: data, inputId: "svr", outputId: "dac")
-    let dac_fftGraph = Graph(data: data, inputId: "dac", outputId: "fft")
-    let dacCount = discoverGraphPathes(dacGraph)
-    let fft_svrCount = discoverGraphPathes(fft_svrGraph, goBackward: true)
-    let dac_fftCount = discoverGraphPathes(dac_fftGraph, goBackward: true)
-    return -1
+    let dacCount = discover(node: dacGraph.input, outputId: dacGraph.output.id)
+    let fftGraph = Graph(data: data, inputId: "fft")
+    let fftCount = discover(node: fftGraph.input, outputId: "dac")
+    return svr_fftCount * fftCount * dacCount
   }
 
-  private func discoverGraphPathes(_ graph: Graph, goBackward: Bool = false) -> Int {
-    let allPathes: [[GraphNode]]? = discover(node: graph.input, outputId: graph.output.id, goBackward: goBackward)
-
-    return allPathes?.count ?? 0
+  private func discoverGraphPathes(_ graph: Graph) -> Int {
+    let pathCount = discover(node: graph.input, outputId: graph.output.id)
+    return pathCount
   }
 
-  private func discover(node: GraphNode, outputId: String, goBackward: Bool) -> [[GraphNode]]? {
-    guard node.id != outputId else { return [[]] }
+  private func discover(node: GraphNode, outputId: String) -> Int {
+    guard node.id != outputId else { 
+      node.pathToExitCount = 1
+      return 1
+    }
 
-    var childrenResults: [[GraphNode]]?
-    for nextNode in goBackward ? node.parents : node.children {
-      guard let childPathes = discover(node: nextNode, outputId: outputId, goBackward: goBackward) else { continue }
+    // Caches value
+    guard node.pathToExitCount == nil else { 
+      return node.pathToExitCount!
+    }
+
+    var childrenResults: Int = 0
+    for nextNode in node.children {
+      let childPathCount = discover(node: nextNode, outputId: outputId)
       //print("\(node.id) -> \(child.id) \(childPathes.count)")
-      let childResult = childPathes.map { [node] + $0 }
-      if childrenResults != nil {
-        childrenResults! += childResult
-      } else {
-        childrenResults = childResult
-      }
+      childrenResults += childPathCount
     }
 
-    return childrenResults
-  }
-
-  private func discover(node: GraphNode, outputId: String, allowedPathShouldContainsId: String?) -> [[GraphNode]]? {
-    guard node.id != outputId else { return allowedPathShouldContainsId == nil ? [[]] : nil }
-    var allowedPathShouldContainsId = allowedPathShouldContainsId
-    if allowedPathShouldContainsId == node.id {
-        allowedPathShouldContainsId = nil
-    }
-
-    var childrenResults: [[GraphNode]]?
-    for child in node.children {
-      guard let childPathes = discover(node: child, outputId: outputId, allowedPathShouldContainsId: allowedPathShouldContainsId) else { continue }
-      //print("\(node.id) -> \(child.id) \(childPathes.count)")
-      let childResult = childPathes.map { [node] + $0 }
-      if var result = childrenResults {
-        result += childResult
-      } else {
-        childrenResults = childResult
-      }
-    }
+    node.pathToExitCount = childrenResults
 
     return childrenResults
   }
