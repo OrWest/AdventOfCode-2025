@@ -21,7 +21,12 @@ struct Day10: AdventDay {
   }
 
   func part2() -> Any {
-    return -1
+    let machines: [Machine<Int>] = getMachines()
+    let solutions = machines.enumerated().map { 
+      print("Machine \($0.offset + 1)/\(machines.count)")
+      return solveButtonPressCount(machine: $0.element) 
+    }
+    return solutions.reduce(0, +)
   }
 
   private func bruteforceFastestCombination<Binary: BinaryInteger>(machine: Machine<Binary>) -> Int {
@@ -53,5 +58,48 @@ struct Day10: AdventDay {
         testBlock([value])
       }
     }
+  }
+
+  private func solveButtonPressCount(machine: Machine<Int>) -> Int {
+    let process = Process()
+
+    process.executableURL = URL(fileURLWithPath: "/usr/bin/python3")
+    process.arguments = ["Sources/python/day10_solve_z3.py"]
+
+    process.environment = [
+        "Z3_LIBRARY_PATH": "full/path/to/dir/with/libz3.dylib"
+    ]
+
+    let inputPipe = Pipe()
+    let outputPipe = Pipe()
+    process.standardInput = inputPipe
+    process.standardOutput = outputPipe
+    process.standardError = outputPipe
+
+    var input = ""
+    for button in machine.joltageButtons {
+        input += button.sorted().map(String.init).joined(separator: ",") + "\n"
+    }
+    input += "---\n"
+    input += machine.joltages.map(String.init).joined(separator: ",") + "\n"
+
+    inputPipe.fileHandleForWriting.write(input.data(using: .utf8)!)
+    inputPipe.fileHandleForWriting.closeFile()
+
+    do {
+        try process.run()
+    } catch {
+        print("Error python:", error)
+        return -1
+    }
+
+    process.waitUntilExit()
+
+    let data = outputPipe.fileHandleForReading.readDataToEndOfFile()
+    let output = String(data: data, encoding: .utf8)!.trimmingCharacters(in: .whitespacesAndNewlines)
+
+    print("Python output:", output)
+
+    return Int(output) ?? -1
   }
 }
